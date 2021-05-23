@@ -1,0 +1,57 @@
+definitions:
+  steps:
+    - step: &build-app
+        name: Build Front
+        image: node:15.12.0-stretch
+        caches:
+          - node
+        script:
+          - npm ci
+          - CI=false npm run build
+        artifacts:
+          - build/**
+    - step: &package-app
+        name: Package App
+        script:
+          - mv bin/ci/deploy build
+          - tar -czvf app.tar.gz --directory=build .
+        artifacts:
+          - app.tar.gz
+    - step: &deploy-staging
+        name: Deploy Staging
+        script:
+          - pipe: atlassian/ssh-run:0.2.2
+            variables:
+              SSH_USER: 'deployer'
+              SERVER: '40.89.161.19'
+              COMMAND: 'mkdir -p /var/www/papi_front/builds/${BITBUCKET_COMMIT}'
+              MODE: 'command'
+          - pipe: atlassian/sftp-deploy:0.5.0
+            variables:
+              USER: 'deployer'
+              SERVER: '40.89.161.19'
+              REMOTE_PATH: '/var/www/papi_front/builds/${BITBUCKET_COMMIT}'
+              LOCAL_PATH: 'app.tar.gz'
+          - pipe: atlassian/ssh-run:0.2.2
+            variables:
+              SSH_USER: 'deployer'
+              SERVER: '40.89.161.19'
+              COMMAND: 'cd /var/www/papi_front/builds/${BITBUCKET_COMMIT}; tar -xvf app.tar.gz; ./deploy ${BITBUCKET_COMMIT} ${BITBUCKET_TAG}; rm app.tar.gz deploy'
+              MODE: 'command'
+
+pipelines:
+  branches:
+    'development':
+      - step: *build-app
+      - step:
+          <<: *package-app
+          deployment: staging
+      - step: *deploy-staging
+
+  custom:
+    deploy_staging:
+      - step: *build-app
+      - step:
+          <<: *package-app
+          deployment: staging
+      - step: *deploy-staging

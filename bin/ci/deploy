@@ -1,0 +1,16 @@
+#!/bin/bash
+
+BASE_DIR="/var/www/papi_front"
+RELEASE_DIR="$BASE_DIR/builds/$1"
+
+echo "Creating build.json file"
+touch "$RELEASE_DIR/build.json"
+if [ -z "$2" ]
+then
+  echo "{\"version\": \"$2\"}" > "$RELEASE_DIR/build.json"
+else
+  echo "{\"version\": \"$1\"}" > "$RELEASE_DIR/build.json"
+fi
+
+echo "Replacing symlink"
+unlink "$BASE_DIR/current" && ln -s "$RELEASE_DIR" "$BASE_DIR/current"

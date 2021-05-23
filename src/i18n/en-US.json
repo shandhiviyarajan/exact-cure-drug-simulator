@@ -1,0 +1,16 @@
+{
+    "translations": {
+        "welcome": "Welcome",
+        "search":{
+            "search":"Search",
+            "simulator":"Launch Simulator",
+            "simulate":"Simulate",
+            "patient_infomation":"Enter Patient Information",
+            "covariant_form":"Covariant Form",
+            "title":"Select a drug",
+            "placeholder":"Type your drug name",
+            "personalized":"Personalized",
+            "description":"You are a hospital, clinic or pharmaco? Contact us to get personalized simulators of repurposed drugs."
+        }
+    }
+}
