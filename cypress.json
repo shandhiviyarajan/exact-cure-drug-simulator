@@ -1,8 +1,0 @@
-{
-  "baseURL": "http://localhost:3000",
-  "integrationFolder": "src/cypress/integration",
-  "component": {
-    "componentFolder": "src/components",
-    "testFiles": ".*/__tests__/.*spec.{js,jsx,ts,tsx}"
-  }
-}
